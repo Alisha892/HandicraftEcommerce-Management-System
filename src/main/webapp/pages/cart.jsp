@@ -1,29 +1,111 @@
-<%@ page import="java.util.*" %>
-<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*, java.sql.*" %>
 <%@ page import="com.handicraft.config.DBConfig" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your Cart</title>
+<meta charset="UTF-8">
+<title>Your Cart</title>
 
-    <!-- CSS LINK -->
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+<style>
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f5efe7;
+}
+
+.navbar {
+    background: #3e5c76;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.container {
+    width: 80%;
+    margin: 40px auto;
+}
+
+h2 {
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th {
+    background: #3e5c76;
+    color: white;
+    padding: 12px;
+}
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.plus { background: #4CAF50; }
+.minus { background: #e74c3c; }
+.remove { background: #555; text-decoration: none; }
+
+.total {
+    text-align: right;
+    margin-top: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.checkout {
+    display: block;
+    margin-left: auto;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background: #c69c6d;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+</style>
 </head>
 
 <body>
+
 <div class="navbar">
-
-<a href="<%= request.getContextPath() %>/pages/products.jsp">Home</a>
-
-<a href="<%= request.getContextPath() %>/pages/products.jsp">Products</a>
-
-<a href="<%= request.getContextPath() %>/pages/cart.jsp">Cart</a>
-
-<a href="<%= request.getContextPath() %>/pages/viewOrders.jsp">My Orders</a>
-
-<a href="<%= request.getContextPath() %>/logout">Logout</a>
-
+    <div>
+        <a href="products.jsp">Products</a>
+    </div>
+    <a href="<%= request.getContextPath() %>/logout">Logout</a>
 </div>
 
 <div class="container">
@@ -32,13 +114,15 @@
 
 <table>
 <tr>
+    <th>Image</th>
     <th>Name</th>
     <th>Price</th>
+    <th>Quantity</th>
     <th>Action</th>
 </tr>
 
 <%
-List<Integer> cart = (List<Integer>) session.getAttribute("cart");
+Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
 
 double total = 0;
 
@@ -46,24 +130,56 @@ if (cart != null && !cart.isEmpty()) {
 
     Connection conn = DBConfig.getConnection();
 
-    for (int id : cart) {
+    for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
+
+        int productId = entry.getKey();
+        int quantity = entry.getValue();
+
         PreparedStatement ps = conn.prepareStatement("SELECT * FROM products WHERE id=?");
-        ps.setInt(1, id);
+        ps.setInt(1, productId);
         ResultSet rs = ps.executeQuery();
 
         if (rs.next()) {
+
+            String name = rs.getString("name");
             double price = rs.getDouble("price");
-            total += price;
+            String image = rs.getString("image");
+
+            total += price * quantity;
 %>
 
 <tr>
-    <td><%= rs.getString("name") %></td>
-    <td>Rs. <%= price %></td>
-    <td>
-        <a href="<%= request.getContextPath() %>/removeFromCart?id=<%= id %>">
-            Remove
-        </a>
-    </td>
+
+<td>
+    <img src="<%= request.getContextPath() %>/uploads/<%= image %>"
+         onerror="this.src='https://via.placeholder.com/60'">
+</td>
+
+<td><%= name %></td>
+
+<td>Rs. <%= price %></td>
+
+<td>
+    <form action="<%= request.getContextPath() %>/updateCart" method="post" style="display:flex; justify-content:center; gap:5px;">
+
+        <input type="hidden" name="id" value="<%= productId %>">
+
+        <button class="btn minus" type="submit" name="quantity" value="<%= quantity - 1 %>">-</button>
+
+        <span><%= quantity %></span>
+
+        <button class="btn plus" type="submit" name="quantity" value="<%= quantity + 1 %>">+</button>
+
+    </form>
+</td>
+
+<td>
+    <a class="btn remove"
+       href="<%= request.getContextPath() %>/removeFromCart?id=<%= productId %>">
+       Remove
+    </a>
+</td>
+
 </tr>
 
 <%
@@ -73,7 +189,7 @@ if (cart != null && !cart.isEmpty()) {
 %>
 
 <tr>
-    <td colspan="3">Your cart is empty</td>
+    <td colspan="5">Your cart is empty</td>
 </tr>
 
 <%
@@ -82,22 +198,12 @@ if (cart != null && !cart.isEmpty()) {
 
 </table>
 
-<br>
+<div class="total">
+    Total: Rs. <%= total %>
+</div>
 
-<h3>Total: Rs. <%= total %></h3>
-
-<br>
-
-<a href="<%= request.getContextPath() %>/checkout">
-    <%
-boolean isEmpty = (cart == null || cart.isEmpty());
-%>
-
-<button 
-    onclick="location.href='<%= request.getContextPath() %>/checkout'" 
-    <%= isEmpty ? "disabled" : "" %>>
+<a href="<%= request.getContextPath() %>/checkout" class="checkout">
     Checkout
-</button>
 </a>
 
 </div>

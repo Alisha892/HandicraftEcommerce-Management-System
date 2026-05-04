@@ -1,15 +1,20 @@
 package com.handicraft.controllers;
 
-import com.handicraft.config.DBConfig;
-
-import jakarta.servlet.ServletException;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.*;
 
-@WebServlet("/deleteProduct")
+import com.handicraft.config.DBConfig;
+
+@WebServlet("/DeleteProductServlet")
 public class DeleteProductServlet extends HttpServlet {
+
+    @Override
+    public void init() {
+        System.out.println("DeleteProductServlet LOADED");
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -19,13 +24,16 @@ public class DeleteProductServlet extends HttpServlet {
         try {
             Connection conn = DBConfig.getConnection();
 
-            String query = "DELETE FROM products WHERE id=?";
-            PreparedStatement ps = conn.prepareStatement(query);
-            ps.setInt(1, id);
+            PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM products WHERE id=?"
+            );
 
+            ps.setInt(1, id);
             ps.executeUpdate();
 
-            response.sendRedirect("pages/products.jsp");
+            conn.close();
+
+            response.sendRedirect(request.getContextPath() + "/pages/admin/manageProducts.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -5,80 +5,154 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Products</title>
+<meta charset="UTF-8">
+<title>Products</title>
 
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+<style>
 
-    <style>
-        .products {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 25px;
-            justify-content: center;
-            margin-top: 30px;
-        }
+/* BODY */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4efe9;
+}
 
-        .card {
-            width: 250px;
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transition: 0.3s;
-            text-align: center;
-        }
+/* NAVBAR */
+.navbar {
+    background-color: #3e5c76;
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+}
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+    font-weight: bold;
+}
 
-        .card img {
-            width: 100%;
-            height: 150px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
+/* CONTAINER */
+.container {
+    padding: 20px 40px;
+}
 
-        .price {
-            color: #2a6fb0;
-            font-weight: bold;
-            margin: 10px 0;
-        }
+/* TITLE */
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
 
-        .btn {
-            display: inline-block;
-            padding: 8px 12px;
-            background: #2a6fb0;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            margin-top: 10px;
-        }
+/* GRID */
+.products {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
 
-        .btn:hover {
-            background: #1d4f85;
-        }
+/* CARD */
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
 
-        h2 {
-            text-align: center;
-        }
-    </style>
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* IMAGE */
+.card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* TEXT */
+.card h3 {
+    margin: 10px 0;
+}
+
+.price {
+    color: #3e5c76;
+    font-weight: bold;
+}
+
+.card p {
+    font-size: 14px;
+    color: #555;
+}
+
+/* BUTTONS */
+.btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    background-color: #c19a6b;
+}
+
+.btn:hover {
+    background-color: #a67c52;
+}
+
+.card-actions {
+    margin-top: 10px;
+}
+
+.edit {
+    background-color: #4CAF50;
+}
+
+.delete {
+    background-color: #e74c3c;
+}
+
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-    <a href="#">Home</a>
-    <a href="cart.jsp">Cart</a>
-    <a href="viewOrders.jsp">My Orders</a>
-    <a href="<%= request.getContextPath() %>/logout">Logout</a>
-</div>
 <%
 String role = (String) session.getAttribute("role");
 %>
-<h2>Explore Products</h2>
+
+<!-- NAVBAR -->
+<div class="navbar">
+
+<% if ("admin".equalsIgnoreCase(role)) { %>
+
+    <!-- ADMIN NAVBAR -->
+    <div>
+        <a href="<%= request.getContextPath() %>/pages/admin/dashboard.jsp">Dashboard</a>
+        <a href="<%= request.getContextPath() %>/pages/products.jsp">Products</a>
+    </div>
+    <a href="<%= request.getContextPath() %>/logout">Logout</a>
+
+<% } else { %>
+
+    <!-- USER NAVBAR -->
+    <div>
+        <a href="<%= request.getContextPath() %>/pages/products.jsp">Home</a>
+        <a href="<%= request.getContextPath() %>/pages/cart.jsp">Cart</a>
+        <a href="<%= request.getContextPath() %>/pages/viewOrders.jsp">My Orders</a>
+    </div>
+    <a href="<%= request.getContextPath() %>/logout">Logout</a>
+
+<% } %>
+
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+<h2>Explore Handmade Products</h2>
 
 <div class="products">
 
@@ -92,40 +166,48 @@ while(rs.next()) {
 
 <div class="card">
 
-   
-   <img src="<%= request.getContextPath() %>/uploads/<%= rs.getString("image") %>" alt="product">
+    <!-- IMAGE -->
+    <img 
+        src="<%= request.getContextPath() %>/uploads/<%= rs.getString("image") %>" 
+        onerror="this.src='https://via.placeholder.com/250x180'">
 
+    <!-- INFO -->
     <h3><%= rs.getString("name") %></h3>
 
     <p class="price">Rs. <%= rs.getDouble("price") %></p>
 
     <p><%= rs.getString("description") %></p>
 
-<%
-if ("admin".equals(role)) {
-%>
+<% if ("admin".equalsIgnoreCase(role)) { %>
 
-    <a class="btn" href="editProduct.jsp?id=<%= rs.getInt("id") %>">Edit</a>
+    <!-- ADMIN BUTTONS -->
+    <div class="card-actions">
+        <a class="btn edit" href="editProduct.jsp?id=<%= rs.getInt("id") %>">Edit</a>
 
-    <a class="btn" href="<%= request.getContextPath() %>/deleteProduct?id=<%= rs.getInt("id") %>">Delete</a>
+        <a class="btn delete" 
+           href="<%= request.getContextPath() %>/deleteProduct?id=<%= rs.getInt("id") %>"
+           onclick="return confirm('Delete this product?');">
+           Delete
+        </a>
+    </div>
 
-<%
-} else {
-%>
+<% } else { %>
 
-    <a class="btn" href="<%= request.getContextPath() %>/addToCart?id=<%= rs.getInt("id") %>">
+    <!-- USER BUTTON -->
+    <a class="btn" 
+       href="<%= request.getContextPath() %>/addToCart?id=<%= rs.getInt("id") %>">
         Add to Cart
     </a>
 
-<%
-}
-%>
+<% } %>
 
 </div>
 
 <%
 }
 %>
+
+</div>
 
 </div>
 

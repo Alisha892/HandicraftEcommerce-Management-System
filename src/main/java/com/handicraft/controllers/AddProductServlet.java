@@ -11,55 +11,60 @@ import java.sql.PreparedStatement;
 
 import com.handicraft.config.DBConfig;
 
-@WebServlet("/addProduct")
+@WebServlet("/AddProductServlet")   // 🔴 IMPORTANT: match JSP action
 @MultipartConfig(
-    fileSizeThreshold = 1024 * 1024 * 2,  // 2MB
-    maxFileSize = 1024 * 1024 * 10,       // 10MB
-    maxRequestSize = 1024 * 1024 * 50     // 50MB
+    fileSizeThreshold = 1024 * 1024 * 2,
+    maxFileSize = 1024 * 1024 * 10,
+    maxRequestSize = 1024 * 1024 * 50
 )
 public class AddProductServlet extends HttpServlet {
-
+	@Override
+	public void init() {
+	    System.out.println("AddProductServlet LOADED");
+	}
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         try {
-            // 1️⃣ GET FORM DATA
+            // ✅ 1. Get form data
             String name = request.getParameter("name");
             double price = Double.parseDouble(request.getParameter("price"));
             String description = request.getParameter("description");
 
-            // 2️⃣ GET IMAGE FILE
+            // ✅ 2. Get image file
             Part filePart = request.getPart("image");
             String fileName = filePart.getSubmittedFileName();
 
-            // 3️⃣ CREATE UPLOAD FOLDER
-            String uploadPath = getServletContext().getRealPath("") + File.separator + "uploads";
+            // 🔴 FIX: safer upload path (not inside build temp)
+            String uploadPath = getServletContext().getRealPath("/uploads");
 
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) {
-                uploadDir.mkdir();
+                uploadDir.mkdirs(); // ✅ better than mkdir()
             }
 
-            // 4️⃣ SAVE FILE
+            // ✅ 3. Save file
             String filePath = uploadPath + File.separator + fileName;
             filePart.write(filePath);
 
-            // 5️⃣ SAVE DATA IN DATABASE
+            // ✅ 4. Save to DB
             Connection conn = DBConfig.getConnection();
 
             PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO products(name, price, description, image) VALUES (?, ?, ?, ?)"
+                    "INSERT INTO products(name, price, description, image) VALUES (?, ?, ?, ?)"
             );
 
             ps.setString(1, name);
             ps.setDouble(2, price);
             ps.setString(3, description);
-            ps.setString(4, fileName); // store only filename
+            ps.setString(4, fileName);
 
             ps.executeUpdate();
 
-            // 6️⃣ REDIRECT
-            response.sendRedirect("pages/products.jsp");
+            conn.close();
+
+            // 🔴 FIX: correct redirect with context path
+            response.sendRedirect(request.getContextPath() + "/pages/admin/adminOrders.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();

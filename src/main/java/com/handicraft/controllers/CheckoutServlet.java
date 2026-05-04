@@ -1,12 +1,13 @@
 package com.handicraft.controllers;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
+import com.handicraft.config.DBConfig;
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.WebServlet;
+
 import java.io.IOException;
 import java.sql.*;
-import java.util.*;
-import com.handicraft.config.DBConfig;
+import java.util.Map;
 
 @WebServlet("/checkout")
 public class CheckoutServlet extends HttpServlet {
@@ -14,56 +15,92 @@ public class CheckoutServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
+        HttpSession session = request.getSession();
+
+        Integer userId = (Integer) session.getAttribute("userId");
+
+        // ✅ SAFETY CHECK
+        if (userId == null) {
+            response.sendRedirect("login.jsp");
+            return;
+        }
+
+        Map<Integer, Integer> cart = (Map<Integer, Integer>) session.getAttribute("cart");
+
+        if (cart == null || cart.isEmpty()) {
+            response.getWriter().println("Cart is empty!");
+            return;
+        }
+
         try {
-            System.out.println("CHECKOUT STARTED");
-
-            HttpSession session = request.getSession();
-
-            Integer userId = (Integer) session.getAttribute("user_id");
-            List<Integer> cart = (List<Integer>) session.getAttribute("cart");
-
-            System.out.println("User ID: " + userId);
-            System.out.println("Cart: " + cart);
-
-            if (userId == null || cart == null || cart.isEmpty()) {
-                System.out.println("Cart empty or user not logged in");
-                response.sendRedirect("pages/cart.jsp");
-                return;
-            }
-
             Connection conn = DBConfig.getConnection();
 
             double total = 0;
 
-            for (int id : cart) {
-                PreparedStatement ps = conn.prepareStatement("SELECT price FROM products WHERE id=?");
-                ps.setInt(1, id);
+            // 🔹 Calculate total
+            for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
+
+                PreparedStatement ps = conn.prepareStatement(
+                        "SELECT price FROM products WHERE id=?"
+                );
+                ps.setInt(1, entry.getKey());
+
                 ResultSet rs = ps.executeQuery();
 
                 if (rs.next()) {
-                    total += rs.getDouble("price");
+                    total += rs.getDouble("price") * entry.getValue();
                 }
             }
 
-            System.out.println("Total: " + total);
-
-            // INSERT ORDER
-            PreparedStatement ps2 = conn.prepareStatement(
-                "INSERT INTO orders(user_id, total_amount, status) VALUES (?, ?, ?)"
+            // 🔹 Insert order
+            PreparedStatement insertOrder = conn.prepareStatement(
+                    "INSERT INTO orders (user_id, total_amount, status) VALUES (?, ?, ?)",
+                    Statement.RETURN_GENERATED_KEYS
             );
 
-            ps2.setInt(1, userId);
-            ps2.setDouble(2, total);
-            ps2.setString(3, "Pending");
+            insertOrder.setInt(1, userId);
+            insertOrder.setDouble(2, total);
+            insertOrder.setString(3, "Placed");
 
-            ps2.executeUpdate();
+            insertOrder.executeUpdate();
 
-            System.out.println("Order inserted");
+            ResultSet keys = insertOrder.getGeneratedKeys();
+            int orderId = 0;
 
-            // CLEAR CART
+            if (keys.next()) {
+                orderId = keys.getInt(1);
+            }
+
+            // 🔹 Insert order items
+            PreparedStatement insertItem = conn.prepareStatement(
+                    "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)"
+            );
+
+            for (Map.Entry<Integer, Integer> entry : cart.entrySet()) {
+
+                PreparedStatement ps = conn.prepareStatement(
+                        "SELECT price FROM products WHERE id=?"
+                );
+                ps.setInt(1, entry.getKey());
+
+                ResultSet rs = ps.executeQuery();
+
+                double price = 0;
+                if (rs.next()) {
+                    price = rs.getDouble("price");
+                }
+
+                insertItem.setInt(1, orderId);
+                insertItem.setInt(2, entry.getKey());
+                insertItem.setInt(3, entry.getValue());
+                insertItem.setDouble(4, price);
+
+                insertItem.executeUpdate();
+            }
+
+            // 🔹 Clear cart
             session.removeAttribute("cart");
 
-            // REDIRECT
             response.sendRedirect("pages/orderSuccess.jsp");
 
         } catch (Exception e) {

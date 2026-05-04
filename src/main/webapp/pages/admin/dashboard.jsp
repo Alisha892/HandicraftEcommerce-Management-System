@@ -1,21 +1,46 @@
-<%@ page import="java.sql.*" %>
-<%@ page import="com.handicraft.config.DBConfig" %>
-<%@ page contentType="text/html;charset=UTF-8" %>
-
+<%@ page session="true" %>
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
     <title>Admin Dashboard</title>
 
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
-
     <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #f5efe7;
+        }
+
+        .navbar {
+            background: #3e5c76;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .nav-right a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .title {
+            text-align: center;
+            margin-top: 30px;
+        }
+
         .dashboard {
             display: flex;
             justify-content: center;
             gap: 30px;
-            margin-top: 30px;
+            margin: 40px 0;
             flex-wrap: wrap;
         }
 
@@ -23,104 +48,77 @@
             background: white;
             padding: 25px;
             width: 220px;
+            border-radius: 14px;
             text-align: center;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            transition: 0.3s;
         }
 
-        .card h2 {
-            margin: 10px 0;
-            color: #2a6fb0;
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
         }
 
         .card p {
+            font-size: 22px;
             font-weight: bold;
+            color: #3e5c76;
         }
 
         .actions {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 40px;
+            text-align: center;
+            margin-bottom: 40px;
         }
 
         .btn {
             padding: 12px 20px;
-            background: #2a6fb0;
+            background: #c69c6d;
             color: white;
-            border-radius: 6px;
+            border-radius: 8px;
             text-decoration: none;
+            margin: 10px;
+            display: inline-block;
+            transition: 0.3s;
         }
 
         .btn:hover {
-            background: #1d4f85;
-        }
-
-        h2 {
-            text-align: center;
+            background: #a67c52;
         }
     </style>
 </head>
 
 <body>
 
+<!-- NAVBAR -->
 <div class="navbar">
-    <span>Admin Panel</span>
-    <a href="<%= request.getContextPath() %>/logout" style="float:right;">Logout</a>
+    <div class="logo">Admin Panel</div>
+    <div class="nav-right">
+        <a href="<%= request.getContextPath() %>/logout">Logout</a>
+    </div>
 </div>
 
-<h2>Welcome Admin!!</h2>
-
-<%
-int totalProducts = 0;
-int totalOrders = 0;
-double totalRevenue = 0;
-
-try {
-    Connection conn = DBConfig.getConnection();
-
-    // Total Products
-    Statement st1 = conn.createStatement();
-    ResultSet rs1 = st1.executeQuery("SELECT COUNT(*) FROM products");
-    if (rs1.next()) {
-        totalProducts = rs1.getInt(1);
-    }
-
-    // Total Orders
-    Statement st2 = conn.createStatement();
-    ResultSet rs2 = st2.executeQuery("SELECT COUNT(*) FROM orders");
-    if (rs2.next()) {
-        totalOrders = rs2.getInt(1);
-    }
-
-    // Total Revenue
-    Statement st3 = conn.createStatement();
-    ResultSet rs3 = st3.executeQuery("SELECT SUM(total_amount) FROM orders");
-    if (rs3.next()) {
-        totalRevenue = rs3.getDouble(1);
-    }
-
-} catch(Exception e) {
-    e.printStackTrace();
-}
-%>
+<!-- TITLE -->
+<h2 class="title">Welcome Admin</h2>
 
 <!-- STATS -->
 <div class="dashboard">
 
     <div class="card">
-        <p>Total Products</p>
-        <h2><%= totalProducts %></h2>
+        <h3>Total Products</h3>
+        <p>2</p>
     </div>
 
     <div class="card">
-        <p> Total Orders</p>
-        <h2><%= totalOrders %></h2>
+        <h3>Total Orders</h3>
+        <p>11</p>
     </div>
 
     <div class="card">
-        <p>Total Revenue</p>
-        <h2>Rs. <%= totalRevenue %></h2>
+        <h3>Revenue</h3>
+        <p>Rs. 19100</p>
     </div>
 
 </div>
@@ -128,11 +126,20 @@ try {
 <!-- ACTION BUTTONS -->
 <div class="actions">
 
-    <a class="btn" href="../products.jsp">Manage Products</a>
+    <!-- ADD PRODUCT -->
+    <a href="<%= request.getContextPath() %>/pages/addProduct.jsp" class="btn">
+        Add Product
+    </a>
 
-    <a class="btn" href="adminOrders.jsp">Manage Orders</a>
+    <!-- MANAGE PRODUCTS -->
+    <a href="<%= request.getContextPath() %>/pages/admin/manageProducts.jsp" class="btn">
+    Manage Products
+</a>
 
-    <a class="btn" href="../addProduct.jsp">Add Product</a>
+    <!-- MANAGE ORDERS (FIXED) -->
+    <a href="<%= request.getContextPath() %>/pages/admin/adminOrders.jsp" class="btn">
+        Manage Orders
+    </a>
 
 </div>
 

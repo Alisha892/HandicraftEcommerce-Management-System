@@ -1,23 +1,90 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Login</title>
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/style.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #e6dfd6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: #f7f7f7;
+            padding: 40px;
+            border-radius: 12px;
+            width: 350px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #c49a6c;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #b88b5a;
+        }
+
+        .signup {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .signup a {
+            color: #6b4f2a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .signup a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Login Page</h2>
+<div class="card">
+    <h2>Login</h2>
 
+    <form action="<%= request.getContextPath() %>/login" method="post">
+        <input type="email" name="email" placeholder="Enter Email" required>
+        <input type="password" name="password" placeholder="Enter Password" required>
 
-<form action="<%= request.getContextPath() %>/login" method="post">
-    Email: <input type="text" name="email" required><br><br>
-    Password: <input type="password" name="password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
 
-    <button type="submit">Login</button>
-</form>
-<div class="signup-link">
-    Don't have an account? 
-    <a href="signup.jsp">Sign Up</a>
+    <!-- ✅ SIGNUP OPTION -->
+    <div class="signup">
+        Don't have an account?
+        <a href="signup.jsp">Sign Up</a>
+    </div>
 </div>
 
 </body>

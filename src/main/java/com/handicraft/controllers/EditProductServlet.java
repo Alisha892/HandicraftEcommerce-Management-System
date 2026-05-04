@@ -1,14 +1,20 @@
 package com.handicraft.controllers;
 
-import com.handicraft.config.DBConfig;
-import jakarta.servlet.*;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.*;
 
-@WebServlet("/editProduct")
+import com.handicraft.config.DBConfig;
+
+@WebServlet("/EditProductServlet")
 public class EditProductServlet extends HttpServlet {
+
+    @Override
+    public void init() {
+        System.out.println("EditProductServlet LOADED");
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -17,25 +23,26 @@ public class EditProductServlet extends HttpServlet {
         String name = request.getParameter("name");
         double price = Double.parseDouble(request.getParameter("price"));
         String description = request.getParameter("description");
-        String category = request.getParameter("category");
 
         try {
             Connection conn = DBConfig.getConnection();
 
-            String query = "UPDATE products SET name=?, price=?, description=?, category=? WHERE id=?";
-            PreparedStatement ps = conn.prepareStatement(query);
+            PreparedStatement ps = conn.prepareStatement(
+                "UPDATE products SET name=?, price=?, description=? WHERE id=?"
+            );
 
             ps.setString(1, name);
             ps.setDouble(2, price);
             ps.setString(3, description);
-            ps.setString(4, category);
-            ps.setInt(5, id);
+            ps.setInt(4, id);
 
             ps.executeUpdate();
 
-            response.sendRedirect("pages/products.jsp");
+            conn.close();
 
-        } catch (Exception e) {
+            response.sendRedirect(request.getContextPath() + "/pages/admin/manageProducts.jsp");
+
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
