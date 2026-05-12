@@ -53,7 +53,10 @@ public class SignupServlet extends HttpServlet {
 
 	        ps.executeUpdate();
 
-	        response.sendRedirect("pages/login.jsp");
+	        response.sendRedirect(
+	        	    request.getContextPath() +
+	        	    "/pages/login.jsp?success=Account Created Successfully"
+	        	);
 
 	    } catch (Exception e) {
 	        e.printStackTrace(); // 🔥 CHECK CONSOLE HERE

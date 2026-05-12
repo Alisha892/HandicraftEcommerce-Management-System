@@ -36,12 +36,17 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("userId", rs.getInt("id"));
                 session.setAttribute("role", role);
-
+                session.setAttribute("userId", rs.getInt("id"));
                 // 🔥 TEMP DEBUG PAGE (IMPORTANT)
                 response.sendRedirect("pages/home.jsp");
 
             } else {
-                response.getWriter().println("Invalid Login");
+
+                response.sendRedirect(
+                    request.getContextPath() +
+                    "/pages/login.jsp?error=Invalid Email or Password"
+                );
+
             }
 
         } catch (Exception e) {

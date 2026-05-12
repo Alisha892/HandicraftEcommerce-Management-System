@@ -1,3 +1,5 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="com.handicraft.config.DBConfig" %>
 <%@ page session="true" %>
 <!DOCTYPE html>
 <html>
@@ -83,6 +85,43 @@
             display: inline-block;
             transition: 0.3s;
         }
+        
+        /* RECENT ORDERS */
+
+.recent-orders {
+    margin-top: 50px;
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.recent-orders h2 {
+    margin-bottom: 20px;
+    color: #3e5c76;
+}
+
+.recent-orders table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.recent-orders th {
+    background-color: #c19a6b;
+    color: white;
+    padding: 12px;
+    text-align: center;
+}
+
+.recent-orders td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.recent-orders tr:hover {
+    background-color: #f9f9f9;
+}
 
         .btn:hover {
             background: #a67c52;
@@ -91,6 +130,64 @@
 </head>
 
 <body>
+
+<%
+
+Connection conn = DBConfig.getConnection();
+
+/* TOTAL PRODUCTS */
+PreparedStatement ps1 = conn.prepareStatement(
+    "SELECT COUNT(*) FROM products"
+);
+
+ResultSet rs1 = ps1.executeQuery();
+
+int totalProducts = 0;
+
+if(rs1.next()){
+    totalProducts = rs1.getInt(1);
+}
+
+/* TOTAL ORDERS */
+PreparedStatement ps2 = conn.prepareStatement(
+    "SELECT COUNT(*) FROM orders"
+);
+
+ResultSet rs2 = ps2.executeQuery();
+
+int totalOrders = 0;
+
+if(rs2.next()){
+    totalOrders = rs2.getInt(1);
+}
+
+/* TOTAL USERS */
+PreparedStatement ps3 = conn.prepareStatement(
+    "SELECT COUNT(*) FROM users"
+);
+
+ResultSet rs3 = ps3.executeQuery();
+
+int totalUsers = 0;
+
+if(rs3.next()){
+    totalUsers = rs3.getInt(1);
+}
+
+/* TOTAL REVENUE */
+PreparedStatement ps4 = conn.prepareStatement(
+		"SELECT SUM(total_amount) FROM orders"
+);
+
+ResultSet rs4 = ps4.executeQuery();
+
+double totalRevenue = 0;
+
+if(rs4.next()){
+    totalRevenue = rs4.getDouble(1);
+}
+
+%>
 
 <!-- NAVBAR -->
 <div class="navbar">
@@ -108,19 +205,85 @@
 
     <div class="card">
         <h3>Total Products</h3>
-        <p>2</p>
+        <p><%= totalProducts %></p>
     </div>
 
     <div class="card">
         <h3>Total Orders</h3>
-        <p>11</p>
+        <p><%= totalOrders %></p>
     </div>
-
+    
     <div class="card">
-        <h3>Revenue</h3>
-        <p>Rs. 19100</p>
-    </div>
 
+    <h3>Total Users</h3>
+
+    <p><%= totalUsers %></p>
+
+</div>
+
+<div class="card">
+
+    <h3>Total Revenue</h3>
+
+    <p>Rs. <%= totalRevenue %></p>
+
+</div>
+
+<!-- RECENT ORDERS -->
+
+<div class="recent-orders">
+
+    <h2>Recent Orders</h2>
+
+    <table>
+
+        <tr>
+            <th>Order ID</th>
+            <th>User ID</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+
+<%
+
+PreparedStatement recentPs = conn.prepareStatement(
+    "SELECT * FROM orders ORDER BY id DESC LIMIT 5"
+);
+
+ResultSet recentRs = recentPs.executeQuery();
+
+while(recentRs.next()) {
+
+%>
+
+        <tr>
+
+            <td><%= recentRs.getInt("id") %></td>
+
+            <td><%= recentRs.getInt("user_id") %></td>
+
+            <td>
+                Rs. <%= recentRs.getDouble("total_amount") %>
+            </td>
+
+            <td>
+                <%= recentRs.getString("status") %>
+            </td>
+
+            <td>
+                <%= recentRs.getString("order_date") %>
+            </td>
+
+        </tr>
+
+<%
+}
+%>
+
+    </table>
+
+</div>
 </div>
 
 <!-- ACTION BUTTONS -->
@@ -142,6 +305,9 @@
     </a>
 
 </div>
+<%
+conn.close();
+%>
 
 </body>
 </html>

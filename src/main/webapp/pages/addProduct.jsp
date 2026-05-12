@@ -108,6 +108,10 @@ button:hover {
             <input type="text" name="name" placeholder="Product Name" required>
 
             <input type="number" name="price" placeholder="Price" required>
+            
+            <input type="number" name="discount" placeholder="Discount %" value="0">
+
+			<input type="text" name="offerText" placeholder="Offer Text (Example: Festival Offer)">
 
             <textarea name="description" placeholder="Description" rows="4" required></textarea>
 

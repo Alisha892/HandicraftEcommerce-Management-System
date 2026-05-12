@@ -29,6 +29,9 @@ public class AddProductServlet extends HttpServlet {
             // ✅ 1. Get form data
             String name = request.getParameter("name");
             double price = Double.parseDouble(request.getParameter("price"));
+            int discount = Integer.parseInt(request.getParameter("discount"));
+
+            String offerText = request.getParameter("offerText");
             String description = request.getParameter("description");
 
             // ✅ 2. Get image file
@@ -51,20 +54,21 @@ public class AddProductServlet extends HttpServlet {
             Connection conn = DBConfig.getConnection();
 
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO products(name, price, description, image) VALUES (?, ?, ?, ?)"
+            		"INSERT INTO products(name, price, description, image, discount, offer_text) VALUES (?, ?, ?, ?, ?, ?)"
             );
 
             ps.setString(1, name);
             ps.setDouble(2, price);
             ps.setString(3, description);
             ps.setString(4, fileName);
-
+            ps.setInt(5, discount);
+            ps.setString(6, offerText);
             ps.executeUpdate();
 
             conn.close();
 
             // 🔴 FIX: correct redirect with context path
-            response.sendRedirect(request.getContextPath() + "/pages/admin/adminOrders.jsp");
+            response.sendRedirect(request.getContextPath() + "/pages/admin/dashboard.jsp");
 
         } catch (Exception e) {
             e.printStackTrace();
