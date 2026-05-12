@@ -28,8 +28,20 @@ public class AddProductServlet extends HttpServlet {
         try {
             // ✅ 1. Get form data
             String name = request.getParameter("name");
-            double price = Double.parseDouble(request.getParameter("price"));
-            int discount = Integer.parseInt(request.getParameter("discount"));
+            String priceStr = request.getParameter("price");
+
+            double price = 0;
+
+            if(priceStr != null && !priceStr.trim().isEmpty()){
+                price = Double.parseDouble(priceStr);
+            }
+            String discountStr = request.getParameter("discount");
+
+            int discount = 0;
+
+            if(discountStr != null && !discountStr.trim().isEmpty()){
+                discount = Integer.parseInt(discountStr);
+            }
 
             String offerText = request.getParameter("offerText");
             String description = request.getParameter("description");
