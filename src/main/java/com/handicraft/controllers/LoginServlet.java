@@ -1,5 +1,5 @@
 package com.handicraft.controllers;
-
+import jakarta.servlet.http.HttpSession;
 import com.handicraft.config.DBConfig;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -29,24 +29,32 @@ public class LoginServlet extends HttpServlet {
 
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-
-                String role = rs.getString("role");
+            if(rs.next()){
 
                 HttpSession session = request.getSession();
-                session.setAttribute("userId", rs.getInt("id"));
+
+                int userId = rs.getInt("id");
+                String name = rs.getString("name");
+                String role = rs.getString("role");
+
+                session.setAttribute("userId", userId);
+                session.setAttribute("name", name);
                 session.setAttribute("role", role);
-                session.setAttribute("userId", rs.getInt("id"));
-                // 🔥 TEMP DEBUG PAGE (IMPORTANT)
-                response.sendRedirect("pages/home.jsp");
+
+                if(role.equalsIgnoreCase("admin")){
+
+                    session.setAttribute("redirectPage", "pages/admin/dashboard.jsp");
+
+                } else {
+
+                    session.setAttribute("redirectPage", "pages/products.jsp");
+                }
+
+                response.sendRedirect("pages/loginSuccess.jsp");
 
             } else {
 
-                response.sendRedirect(
-                    request.getContextPath() +
-                    "/pages/login.jsp?error=Invalid Email or Password"
-                );
-
+                response.getWriter().println("Invalid Login");
             }
 
         } catch (Exception e) {

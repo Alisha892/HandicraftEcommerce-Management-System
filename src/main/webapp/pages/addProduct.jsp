@@ -93,7 +93,9 @@ button:hover {
 
 <div class="navbar">
     <div class="logo">Admin Panel</div>
-    <a href="../login.jsp" class="logout">Logout</a>
+    <a href="<%= request.getContextPath() %>/logout">
+    Logout
+</a>
 </div>
 
 <div class="container">
