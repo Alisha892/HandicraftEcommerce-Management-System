@@ -111,6 +111,8 @@ button:hover {
 
             <input type="number" name="price" placeholder="Price" required>
             
+            <input type="number" name="stock" placeholder="Stock Quantity" required>
+            
             <input type="number" name="discount" placeholder="Discount %" value="0">
 
 			<input type="text" name="offerText" placeholder="Offer Text (Example: Festival Offer)">

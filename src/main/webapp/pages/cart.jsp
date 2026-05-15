@@ -106,6 +106,9 @@ img {
         <a href="products.jsp">Products</a>
     </div>
     <a href="<%= request.getContextPath() %>/logout">Logout</a>
+    <a href="<%=request.getContextPath()%>/pages/about.jsp">About</a>
+
+<a href="<%=request.getContextPath()%>/pages/contact.jsp">Contact</a>
 </div>
 
 <div class="container">

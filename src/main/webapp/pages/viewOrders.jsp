@@ -128,6 +128,9 @@ table tr:hover{
         <a href="<%= request.getContextPath() %>/pages/profile.jsp">
             Profile
         </a>
+        <a href="<%=request.getContextPath()%>/pages/about.jsp">About</a>
+
+<a href="<%=request.getContextPath()%>/pages/contact.jsp">Contact</a>
     </div>
 
     <div>

@@ -42,6 +42,8 @@ public class AddProductServlet extends HttpServlet {
             if(discountStr != null && !discountStr.trim().isEmpty()){
                 discount = Integer.parseInt(discountStr);
             }
+            
+            int stock = Integer.parseInt(request.getParameter("stock"));
 
             String offerText = request.getParameter("offerText");
             String description = request.getParameter("description");
@@ -65,16 +67,18 @@ public class AddProductServlet extends HttpServlet {
             // ✅ 4. Save to DB
             Connection conn = DBConfig.getConnection();
 
-            PreparedStatement ps = conn.prepareStatement(
-            		"INSERT INTO products(name, price, description, image, discount, offer_text) VALUES (?, ?, ?, ?, ?, ?)"
-            );
+            String sql = "INSERT INTO products(name,price,stock,discount,offer_text,description,image) VALUES(?,?,?,?,?,?,?)";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setString(1, name);
             ps.setDouble(2, price);
-            ps.setString(3, description);
-            ps.setString(4, fileName);
-            ps.setInt(5, discount);
-            ps.setString(6, offerText);
+            ps.setInt(3, stock);
+            ps.setInt(4, discount);
+            ps.setString(5, offerText);
+            ps.setString(6, description);
+            ps.setString(7, fileName);
+
             ps.executeUpdate();
 
             conn.close();

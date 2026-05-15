@@ -296,6 +296,9 @@ String role = (String) session.getAttribute("role");
         <a href="<%= request.getContextPath() %>/pages/profile.jsp">
     Profile
 </a>
+<a href="<%=request.getContextPath()%>/pages/about.jsp">About</a>
+
+<a href="<%=request.getContextPath()%>/pages/contact.jsp">Contact</a>
     </div>
 
     <a href="<%= request.getContextPath() %>/logout">Logout</a>
@@ -530,6 +533,51 @@ while(rs.next()) {
 
     <!-- DESCRIPTION -->
     <p><%= rs.getString("description") %></p>
+    <%
+
+int stock = rs.getInt("stock");
+
+if(stock == 0){
+%>
+
+<p style="color:red;
+font-weight:bold;">
+
+Out of Stock
+
+</p>
+
+<%
+
+}else if(stock <= 2){
+
+%>
+
+<p style="color:orange;
+font-weight:bold;">
+
+Only <%=stock%> left
+
+</p>
+
+<%
+
+}else{
+
+%>
+
+<p style="color:green;
+font-weight:bold;">
+
+In Stock
+
+</p>
+
+<%
+
+}
+
+%>
 
 <% if ("admin".equalsIgnoreCase(role)) { %>
 
@@ -554,10 +602,26 @@ while(rs.next()) {
 <% } else { %>
 
     <!-- USER ACTION -->
-    <a class="btn"
-       href="<%= request.getContextPath() %>/addToCart?id=<%= rs.getInt("id") %>">
-       Add to Cart
-    </a>
+    <% if(stock>0){ %>
+
+<a class="btn"
+href="<%= request.getContextPath() %>/addToCart?id=<%= rs.getInt("id") %>">
+
+Add to Cart
+
+</a>
+
+<% } else { %>
+
+<a class="btn"
+style="background:gray;
+pointer-events:none;">
+
+Unavailable
+
+</a>
+
+<% } %>
 
 <br><br>
 

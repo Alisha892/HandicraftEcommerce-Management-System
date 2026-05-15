@@ -30,19 +30,15 @@ body { font-family:Segoe UI; background:#f5efe7; }
 
 <div class="box">
 <h2>Select Payment Method</h2>
+</div>
+<div class="navbar">
+<a href="<%=request.getContextPath()%>/pages/about.jsp">About</a>
 
-<form action="<%= request.getContextPath() %>/payment" method="post">
+<a href="<%=request.getContextPath()%>/pages/contact.jsp">Contact</a>
+<div>
 
-<select name="method">
-<option>Cash on Delivery</option>
-<option>UPI</option>
-<option>Credit Card</option>
-</select>
 
-<br>
-<button class="btn">Place Order</button>
 
-</form>
 </div>
 
 </body>

@@ -112,7 +112,9 @@ body{
     <a href="<%= request.getContextPath() %>/pages/viewOrders.jsp">
         My Orders
     </a>
+<a href="<%=request.getContextPath()%>/pages/about.jsp">About</a>
 
+<a href="<%=request.getContextPath()%>/pages/contact.jsp">Contact</a>
 </div>
 
 <div>

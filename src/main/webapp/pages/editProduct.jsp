@@ -6,9 +6,14 @@
 int id = Integer.parseInt(request.getParameter("id"));
 
 Connection conn = DBConfig.getConnection();
-PreparedStatement ps = conn.prepareStatement("SELECT * FROM products WHERE id=?");
-ps.setInt(1, id);
-ResultSet rs = ps.executeQuery();
+
+PreparedStatement ps =
+conn.prepareStatement(
+"SELECT * FROM products WHERE id=?");
+
+ps.setInt(1,id);
+
+ResultSet rs=ps.executeQuery();
 
 rs.next();
 %>
@@ -21,81 +26,78 @@ rs.next();
 
 <style>
 
-/* BODY */
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4efe9;
+body{
+margin:0;
+font-family:Arial,sans-serif;
+background:#f4efe9;
 }
 
-/* NAVBAR */
-.navbar {
-    background-color: #3e5c76;
-    color: white;
-    padding: 15px 40px;
-    display: flex;
-    justify-content: space-between;
+.navbar{
+background:#3e5c76;
+padding:15px 40px;
+display:flex;
+justify-content:space-between;
+color:white;
 }
 
-.navbar a {
-    color: white;
-    text-decoration: none;
+.navbar a{
+color:white;
+text-decoration:none;
 }
 
-/* CENTER */
-.container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 85vh;
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+padding:40px;
 }
 
-/* CARD */
-.form-box {
-    background: white;
-    padding: 40px;
-    width: 400px;
-    border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+.form-box{
+
+background:white;
+width:450px;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 15px rgba(0,0,0,.1);
+
 }
 
-.form-box h2 {
-    text-align: center;
-    margin-bottom: 20px;
+h2{
+text-align:center;
+margin-bottom:20px;
 }
 
-/* INPUTS */
-.form-group {
-    margin-bottom: 15px;
+input,textarea{
+
+width:100%;
+padding:12px;
+margin-bottom:15px;
+border:1px solid #ccc;
+border-radius:5px;
+
 }
 
-.form-group input,
-.form-group textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
+textarea{
+height:80px;
+resize:none;
 }
 
-textarea {
-    height: 80px;
-    resize: none;
+.btn{
+
+width:100%;
+padding:12px;
+background:#c19a6b;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+
 }
 
-/* BUTTON */
-.btn {
-    width: 100%;
-    padding: 12px;
-    background-color: #c19a6b;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-}
+.btn:hover{
 
-.btn:hover {
-    background-color: #a67c52;
+background:#a67c52;
+
 }
 
 </style>
@@ -103,40 +105,81 @@ textarea {
 
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-    <div>Edit Product</div>
-    <a href="products.jsp">Back</a>
+<div>Edit Product</div>
+<a href="manageProducts.jsp">Back</a>
 </div>
 
-<!-- FORM -->
 <div class="container">
 
 <div class="form-box">
 
 <h2>Update Product</h2>
 
-<form action="<%=request.getContextPath()%>/editProduct" method="post">
+<form action="<%=request.getContextPath()%>/editProduct"
+method="post">
 
-    <input type="hidden" name="id" value="<%=rs.getInt("id")%>">
+<input type="hidden"
+name="id"
+value="<%=id%>">
 
-    <div class="form-group">
-        <input type="text" name="name" value="<%=rs.getString("name")%>" required>
-    </div>
 
-    <div class="form-group">
-        <input type="number" name="price" value="<%=rs.getDouble("price")%>" required>
-    </div>
+<input
+type="text"
+name="name"
+value="<%=rs.getString("name")%>"
+required>
 
-    <div class="form-group">
-        <textarea name="description"><%=rs.getString("description")%></textarea>
-    </div>
 
-    <div class="form-group">
-        <input type="text" name="category" value="<%=rs.getString("category")%>">
-    </div>
+<input
+type="number"
+name="price"
+value="<%=rs.getDouble("price")%>"
+required>
 
-    <button type="submit" class="btn">Update Product</button>
+
+<input
+type="number"
+name="stock"
+value="<%=rs.getInt("stock")%>"
+placeholder="Stock Quantity"
+required>
+
+
+<input
+type="number"
+name="discount"
+value="<%=rs.getInt("discount")%>"
+placeholder="Discount"
+required>
+
+
+<input
+type="text"
+name="offerText"
+value="<%=rs.getString("offer_text")%>"
+placeholder="Offer Text">
+
+
+<input
+type="text"
+name="category"
+value="<%=rs.getString("category")%>"
+placeholder="Category">
+
+
+<textarea
+name="description"
+required><%=rs.getString("description")%></textarea>
+
+
+<button
+type="submit"
+class="btn">
+
+Update Product
+
+</button>
 
 </form>
 
