@@ -69,19 +69,18 @@ p{
 
 <p>
 
-The Handicraft E-Commerce Management System is a web-based application developed to provide customers with an easy and convenient platform for purchasing handmade products online. The system enables users to browse handicraft products, manage carts, place orders, and track purchases efficiently.
+The Handicraft E-Commerce System is a web-based platform developed to provide customers with an easy and convenient way to explore and purchase handmade and traditional handicraft products online. The system is designed to support digital commerce by connecting customers with a variety of handcrafted items through a simple and user-friendly interface. It aims to promote handicraft products and improve accessibility by allowing users to browse and purchase items from anywhere and at any time.
+</p>
+
+<p>
+
+Our platform provides a range of services and features to enhance the shopping experience. Customers can create accounts, securely log in, browse products, search and sort items, view product details, add products to the cart, place orders, and manage their profiles. The system also displays discounts, promotional offers, and product availability information to help users make better purchasing decisions.
 
 </p>
 
 <p>
 
-The objective of the project is to support digital business operations and promote local handicraft products through an organized online platform. Administrators can manage products and customer orders through an admin dashboard.
-
-</p>
-
-<p>
-
-This project is developed using Java, JSP, Servlets, JDBC, HTML, CSS, and MySQL following the MVC architecture.
+For administrators, the system provides an efficient management platform to add, edit, and remove products, manage stock and inventory, update product offers, and monitor customer orders through the admin dashboard. The goal of the Handicraft E-Commerce System is to simplify online shopping, improve inventory management, and provide a complete digital solution for handicraft businesses.
 
 </p>
 

@@ -86,6 +86,40 @@
     font-weight: bold;
     border: 1px solid #b7ebc6;
 }
+.error-box{
+
+background:#ffe5e5;
+color:#d8000c;
+
+padding:14px;
+
+margin-bottom:20px;
+
+border-left:5px solid red;
+
+border-radius:8px;
+
+font-size:15px;
+
+font-weight:bold;
+
+animation: fadeIn .5s;
+
+}
+
+@keyframes fadeIn{
+
+from{
+opacity:0;
+transform:translateY(-10px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
     </style>
 </head>
 
